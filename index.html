@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			body {
+				background-color: #99CCFF;
+			}
+
+			#canvas {
+				background-color: #fff;
+				color: rgba(255, 0, 0, 1);
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin: auto;
+
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvas">
+			您的浏览器不支持，canvas标签
+		</canvas>
+		<script type="text/javascript">
+			// 获取画布
+			var canvas = document.getElementById('canvas');
+
+			// 设置画布的宽高
+			canvas.width = 300;
+			canvas.height = 300;
+			// 获取画笔
+			var ctx = canvas.getContext('2d');
+
+			// 创建图像对象
+			var sun = new Image();
+			var moon = new Image();
+			var earth = new Image();
+
+
+			// 初始化图像对象的路径
+			function init() {
+				sun.src = './img/canvas_animation_sun.png'
+				moon.src = './img/canvas_animation_moon.png'
+				earth.src = './img/canvas_animation_earth.png';
+				window.requestAnimationFrame(draw);
+			}
+
+			function draw() {
+				// 清空画布，不清除会叠加绘制（会出现锯齿）
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				// 绘制背景(太阳)
+				// ctx.drawImage(sun,0,0,canvas.width,canvas.height);
+				// 设置样式（轨道边框，阴影样式）
+				ctx.fillStyle = "rgba(0,0,0,0.4)";
+				ctx.strokeStyle = "rgba(0,153,255,0.4)";
+				ctx.save();
+				ctx.translate(150, 150);
+
+				var time = new Date();
+				// 绘制地球
+
+				/* 
+					秒
+					((2*Math.PI)/60)*time.getSeconds(); 360/60=6°
+					毫秒
+					((2*Math.PI)/60000)*time.getMilliseconds(); 360/6000=0.06°
+				 */
+				ctx.rotate(((2 * Math.PI) / 60) * time.getSeconds() + ((2 * Math.PI) / 60000) * time.getMilliseconds());
+				ctx.translate(105, 0);
+				// 绘制阴影
+				ctx.fillRect(0, -12, 50, 24);
+				ctx.drawImage(earth, -12, -12);
+
+
+				// 绘制月球
+				ctx.save();
+				/*
+					秒
+					((2*Math.PI)/60)*time.getSeconds(); 360/6=60°
+					毫秒
+					((2*Math.PI)/60000)*time.getMilliseconds(); 360/6000=0.006°
+				 */
+				ctx.rotate(((2 * Math.PI) / 6) * time.getSeconds() + ((2 * Math.PI) / 6000) * time.getMilliseconds());
+				ctx.translate(0, 28.5);
+				ctx.drawImage(moon, -3.5, -3.5);
+
+
+				ctx.restore();
+				ctx.restore();
+				// 绘制轨道(地球围绕轨道旋转)
+				ctx.beginPath();
+				ctx.arc(150, 150, 105, Math.PI * 2, false);
+				ctx.stroke();
+				window.requestAnimationFrame(draw);
+
+				// 设置图形混合模式
+				ctx.globalCompositeOperation = 'destination-over'; //新内容在原内容的下方绘制
+				// 绘制背景(太阳)
+				ctx.drawImage(sun, 0, 0, canvas.width, canvas.height);
+			}
+			init();
+		</script>
+	</body>
+</html>
+
